@@ -1,22 +1,25 @@
 package edu.timebandit.BasketService.core.domain.service.interfaces;
 
+import edu.timebandit.BasketService.core.domain.model.Basket;
+import edu.timebandit.BasketService.core.domain.model.Watch;
+
 public interface IBasketService {
 
     String createBasket();
 
-    String addProductToBasket(String basketID, String watchID, int quantity);
+    Double addProductToBasket(String basketID, Watch watch, int quantity);
 
-    String removeProductFromBasket(String basketID, String watchID);
+    Double removeProductFromBasket(String basketID, String watchID);
 
-    String updateProductQuantityInBasket(String basketID, String watchID, int quantity);
+    Double updateProductQuantityInBasket(String basketID, String watchID, int quantity);
 
     String clearBasket(String basketID);
 
-    String deleteBasket(String basketID);
+    void deleteBasket(String basketID);
 
-    String getBasket(String basketID);
+    Basket getBasketByID(String basketID);
 
-    String getAllBaskets();
+    Iterable<Basket> getAllBaskets();
 
-    String getBasketTotalPrice(String basketID);
+    Double getBasketTotalPrice(String basketID);
 }

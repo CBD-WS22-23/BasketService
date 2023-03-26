@@ -7,7 +7,7 @@ public interface IBasketProductService {
 
     String createBasketProduct(WatchDTO watch);
 
-    String updateBasketProduct(WatchDTO watch, String watchID);
+    String updateBasketProduct(WatchDTO watch);
 
     void deleteBasketProduct(String watchID);
 

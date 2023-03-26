@@ -23,8 +23,13 @@ public class Basket {
     @UuidGenerator
     private UUID id;
 
-    @ElementCollection
-    private Map<String, Integer> products;
+
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "basket_watch",
+            joinColumns = @JoinColumn(name = "basket_id"),
+            inverseJoinColumns = @JoinColumn(name = "watch_id"))
+    private Map<String, BasketWatch> products;
 
     private double totalPrice;
 }
