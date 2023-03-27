@@ -33,7 +33,7 @@ services:
     networks:
       - internal
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://basketDB:5433/basketDB
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://productDB:5432/basketDB
       #- spring_rabbitmq_host=rabbitmq-container
       #- spring_rabbitmq_port=5672+
 

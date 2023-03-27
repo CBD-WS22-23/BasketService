@@ -1,6 +1,7 @@
 package edu.timebandit.BasketService.core.domain.service.interfaces;
 
 import edu.timebandit.BasketService.core.domain.model.Basket;
+import edu.timebandit.BasketService.core.domain.model.BasketWatch;
 import edu.timebandit.BasketService.core.domain.model.Watch;
 
 public interface IBasketService {
@@ -13,7 +14,7 @@ public interface IBasketService {
 
     Double updateProductQuantityInBasket(String basketID, String watchID, int quantity);
 
-    String clearBasket(String basketID);
+    void clearBasket(String basketID);
 
     void deleteBasket(String basketID);
 
@@ -22,4 +23,10 @@ public interface IBasketService {
     Iterable<Basket> getAllBaskets();
 
     Double getBasketTotalPrice(String basketID);
+
+    Double getProductTotalPrice(String basketID, String watchID);
+
+    BasketWatch getBasketItem(String basketID, String watchID);
+
+    boolean checkBasketExists(String basketID);
 }

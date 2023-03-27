@@ -3,17 +3,15 @@ package edu.timebandit.BasketService.core.domain.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "basket_watch")
+@Embeddable
 public class BasketWatch {
 
-    @Id
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "watch_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "watch_id")
     private Watch watch;
     private int quantity;
 

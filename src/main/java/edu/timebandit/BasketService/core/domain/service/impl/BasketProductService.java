@@ -4,10 +4,12 @@ import edu.timebandit.BasketService.core.domain.model.Watch;
 import edu.timebandit.BasketService.core.domain.model.WatchDTO;
 import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketProductRepository;
 import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketProductService;
+import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.UUID;
 
+@Service
 public class BasketProductService implements IBasketProductService {
 
     private final IBasketProductRepository basketProductRepository;

@@ -5,10 +5,12 @@ import edu.timebandit.BasketService.core.domain.model.BasketWatch;
 import edu.timebandit.BasketService.core.domain.model.Watch;
 import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketRepository;
 import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketService;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.UUID;
 
+@Service
 public class BasketService implements IBasketService {
 
     private final IBasketRepository basketRepository;
@@ -62,14 +64,12 @@ public class BasketService implements IBasketService {
     }
 
     @Override
-    public String clearBasket(String basketID) {
+    public void clearBasket(String basketID) {
         Basket retrievedBasket = basketRepository.findById(UUID.fromString(basketID)).orElse(null);
         if (retrievedBasket != null) {
             retrievedBasket.getProducts().clear();
             retrievedBasket.setTotalPrice(0.0);
-            return basketRepository.save(retrievedBasket).getId().toString();
         }
-        return null;
     }
 
     @Override
@@ -94,6 +94,32 @@ public class BasketService implements IBasketService {
             return retrievedBasket.getTotalPrice();
         }
         return null;
+    }
+
+    @Override
+    public Double getProductTotalPrice(String basketID, String watchID) {
+        Basket retrievedBasket = basketRepository.findById(UUID.fromString(basketID)).orElse(null);
+        if (retrievedBasket != null) {
+            if (retrievedBasket.getProducts().containsKey(watchID)) {
+                BasketWatch basketWatch = retrievedBasket.getProducts().get(watchID);
+                return basketWatch.getWatch().getPrice() * basketWatch.getQuantity();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public BasketWatch getBasketItem(String basketID, String watchID) {
+        Basket retrievedBasket = basketRepository.findById(UUID.fromString(basketID)).orElse(null);
+        if (retrievedBasket != null) {
+            return retrievedBasket.getProducts().get(watchID);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean checkBasketExists(String basketID) {
+        return basketRepository.existsById(UUID.fromString(basketID));
     }
 
     private Double calculateBasketTotalPrice(Basket basket) {

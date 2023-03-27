@@ -3,7 +3,8 @@ package edu.timebandit.BasketService.core.domain.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
@@ -17,9 +18,8 @@ import java.util.UUID;
 public class Watch {
 
     @Id
-    @Column(nullable = false, unique = true, columnDefinition = "uuid")
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @UuidGenerator
+    @Column(nullable = false, unique = true)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
 
     @Column(nullable = false)
