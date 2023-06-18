@@ -25,11 +25,10 @@ public class Watch {
     @Column(nullable = false)
     private String name;
 
-    private String thumbLink;
-
     @Column(nullable = false)
     private double price;
 
     private int stock;
 
+    private String thumbnail;
 }

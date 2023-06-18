@@ -26,7 +26,7 @@ public class Basket {
 
 
     @ElementCollection
-    private Map<String, BasketWatch> products;
+    private Map<String, Integer> products;
 
     private double totalPrice;
 }

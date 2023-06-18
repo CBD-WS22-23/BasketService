@@ -1,7 +1,6 @@
 package edu.timebandit.BasketService.port.user.controller;
 
 import edu.timebandit.BasketService.core.domain.model.Basket;
-import edu.timebandit.BasketService.core.domain.model.BasketWatch;
 import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketProductService;
 import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketService;
 import edu.timebandit.BasketService.port.user.exception.BasketNotFoundException;
@@ -103,6 +102,7 @@ public class BasketController {
         }
     }
 
+    /*
     @Operation(summary = "Get an item in the basket by id")
     @GetMapping(path = "/basket/{basketID}/product/{productID}")
     @ResponseStatus(HttpStatus.OK)
@@ -118,20 +118,13 @@ public class BasketController {
             throw new BasketNotFoundException(basketID);
         }
     }
+     */
 
     @Operation(summary = "Remove a product from a basket")
     @DeleteMapping(path = "/basket/{basketID}/product/{productID}")
     @ResponseStatus(HttpStatus.OK)
     public Double removeProductFromBasket(@PathVariable String basketID, @PathVariable String productID) {
-        if (basketService.checkBasketExists(basketID)) {
-            if (basketService.getBasketItem(basketID, productID) != null) {
-                return basketService.removeProductFromBasket(basketID, productID);
-            } else {
-                throw new ProductNotInBasketException(basketID, productID);
-            }
-        } else {
-            throw new BasketNotFoundException(basketID);
-        }
+        return null;
     }
 
     @Operation(summary = "Update the quantity of a product in a basket")
@@ -139,33 +132,13 @@ public class BasketController {
     @ResponseStatus(HttpStatus.OK)
     public Double updateProductQuantity(@PathVariable String basketID, @PathVariable String productID,
                                         @RequestParam int q) {
-        if (basketService.checkBasketExists(basketID)) {
-            if (basketService.getBasketItem(basketID, productID) != null) {
-                if (q > 0) {
-                    return basketService.updateProductQuantityInBasket(basketID, productID, q);
-                } else {
-                    throw new InvalidQuantityException();
-                }
-            } else {
-                throw new ProductNotInBasketException(basketID, productID);
-            }
-        } else {
-            throw new BasketNotFoundException(basketID);
-        }
+        return null;
     }
 
     @Operation(summary = "Get the total price of a product in a basket")
     @GetMapping(path = "/basket/{basketID}/product/{productID}/total")
     @ResponseStatus(HttpStatus.OK)
     public Double getProductTotalPrice(@PathVariable String basketID, @PathVariable String productID) {
-        if (basketService.checkBasketExists(basketID)) {
-            if (basketService.getBasketItem(basketID, productID) != null) {
-                return basketService.getProductTotalPrice(basketID, productID);
-            } else {
-                throw new ProductNotInBasketException(basketID, productID);
-            }
-        } else {
-            throw new BasketNotFoundException(basketID);
-        }
+        return null;
     }
 }

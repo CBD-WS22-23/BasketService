@@ -20,16 +20,14 @@ public class BasketProductService implements IBasketProductService {
 
     @Override
     public String createBasketProduct(WatchDTO watch) {
-        return basketProductRepository.save(new Watch(UUID.fromString(watch.getId()), watch.getName(),
-                watch.getThumbLink(),
-                watch.getPrice(), watch.getStock())).getId().toString();
+        return basketProductRepository.save(new Watch(UUID.fromString(watch.getId()), watch.getName(), watch.getPrice(),
+                watch.getStock(), watch.getThumbnail())).getId().toString();
     }
 
     @Override
     public String updateBasketProduct(WatchDTO watch) {
-        return basketProductRepository.save(new Watch(UUID.fromString(watch.getId()), watch.getName(),
-                watch.getThumbLink(),
-                watch.getPrice(), watch.getStock())).getId().toString();
+        return basketProductRepository.save(new Watch(UUID.fromString(watch.getId()), watch.getName(), watch.getPrice(),
+                 watch.getStock(), watch.getThumbnail())).getId().toString();
     }
 
     @Override
