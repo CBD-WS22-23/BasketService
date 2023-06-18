@@ -33,6 +33,21 @@ public class RabbitMQConfig {
     @Value("product_exchange")
     private String exchange;
 
+    @Value("product_added_to_basket_queue")
+    private String productAddedName;
+
+    @Value("product_added_to_basket_routing_key")
+    private String productAddedRoutingKey;
+
+    @Value("product_removed_from_basket_queue")
+    private String productRemovedName;
+
+    @Value("product_removed_from_basket_routing_key")
+    private String productRemovedRoutingKey;
+
+    @Value("basket_exchange")
+    private String basketExchange;
+
     @Bean
     public Queue createQueue() {
         return new Queue(createQueueName);
@@ -51,6 +66,18 @@ public class RabbitMQConfig {
     @Bean
     public DirectExchange exchange() {
         return new DirectExchange(exchange);
+    }
+
+    public Queue productAddedToBasketQueue() {
+        return new Queue(productAddedName);
+    }
+
+    public Queue productRemovedFromBasketQueue() {
+        return new Queue(productRemovedName);
+    }
+
+    public DirectExchange basketExchange() {
+        return new DirectExchange(basketExchange);
     }
 
     @Bean
@@ -75,6 +102,22 @@ public class RabbitMQConfig {
                 .bind(deleteQueue())
                 .to(exchange())
                 .with(deleteRoutingKey);
+    }
+
+    @Bean
+    public Binding productAddedToBasketBinding() {
+        return BindingBuilder
+                .bind(productAddedToBasketQueue())
+                .to(basketExchange())
+                .with(productAddedRoutingKey);
+    }
+
+    @Bean
+    public Binding productRemovedFromBasketBinding() {
+        return BindingBuilder
+                .bind(productRemovedFromBasketQueue())
+                .to(basketExchange())
+                .with(productRemovedRoutingKey);
     }
 
     @Bean
