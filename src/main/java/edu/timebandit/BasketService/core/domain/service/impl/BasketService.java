@@ -54,6 +54,7 @@ public class BasketService implements IBasketService {
             }
             double totalPrice = calculateBasketTotalPrice(basket);
             basket.setTotalPrice(totalPrice);
+            basketRepository.save(basket);
             return totalPrice;
         }
         return null;
@@ -68,6 +69,7 @@ public class BasketService implements IBasketService {
             basket.getProductPrices().remove(watchID);
             double totalPrice = calculateBasketTotalPrice(basket);
             basket.setTotalPrice(totalPrice);
+            basketRepository.save(basket);
             return totalPrice;
         }
         return null;
@@ -95,6 +97,7 @@ public class BasketService implements IBasketService {
             }
             double totalPrice = calculateBasketTotalPrice(basket);
             basket.setTotalPrice(totalPrice);
+            basketRepository.save(basket);
             return totalPrice;
         }
         return null;
@@ -107,6 +110,7 @@ public class BasketService implements IBasketService {
             retrievedBasket.getProductAmounts().clear();
             retrievedBasket.getProductPrices().clear();
             retrievedBasket.setTotalPrice(0.0);
+            basketRepository.save(retrievedBasket);
         }
     }
 

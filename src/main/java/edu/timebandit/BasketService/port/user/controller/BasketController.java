@@ -82,7 +82,7 @@ public class BasketController {
 
     @Operation(summary = "Add a product to a basket")
     @PostMapping(path = "/basket/{basketID}/product/{productID}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public Double addProductToBasket(@PathVariable String basketID, @PathVariable String productID,
                                      @RequestParam int q) {
         if (q <= 0) {

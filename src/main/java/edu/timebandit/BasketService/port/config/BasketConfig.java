@@ -41,9 +41,13 @@ public class BasketConfig {
                         3722.00, 9, null)
 
         );
-
+        HashMap<String, Integer> products = new HashMap<>();
+        products.put("58b74e3e-8e46-4419-bfc6-a8c43dfa694a", 1);
+        HashMap<String, Double> prices = new HashMap<>();
+        prices.put("58b74e3e-8e46-4419-bfc6-a8c43dfa694a", 12913.00);
         List<Basket> baskets = List.of(
-                new Basket(UUID.fromString("bdfc6420-2bda-4fbb-a445-700b49ea2cc1"), new HashMap<>(), 0)
+                new Basket(UUID.fromString("bdfc6420-2bda-4fbb-a445-700b49ea2cc1"), products, prices,
+                        12913.00)
         );
         return args -> {
             basketRepository.saveAll(baskets);
