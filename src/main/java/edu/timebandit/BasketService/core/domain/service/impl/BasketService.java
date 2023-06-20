@@ -7,6 +7,7 @@ import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketServic
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -20,21 +21,82 @@ public class BasketService implements IBasketService {
 
     @Override
     public String createBasket() {
-        return basketRepository.save(new Basket(UUID.randomUUID(), new HashMap<>(), 0)).getId().toString();
+        return basketRepository.save(new Basket(UUID.randomUUID(), new HashMap<>(), new HashMap<>(), 0.0)).getId().toString();
     }
 
     @Override
     public Double addProductToBasket(String basketID, Watch watch, int quantity) {
+        Optional<Basket> optionalBasket = basketRepository.findById(UUID.fromString(basketID));
+        if (optionalBasket.isPresent()) {
+            Basket basket = optionalBasket.get();
+            double productPrice = watch.getPrice();
+            int productStock = watch.getStock();
+            String productID = watch.getId().toString();
+            boolean productInBasket = basket.getProductAmounts().containsKey(productID);
+
+            if (productInBasket) {
+                int currentProductAmount = basket.getProductAmounts().get(productID);
+                if (currentProductAmount + quantity <= productStock) {
+                    basket.getProductAmounts().put(productID, currentProductAmount + quantity);
+                    basket.getProductPrices().put(productID, productPrice * (currentProductAmount + quantity));
+                } else {
+                    basket.getProductAmounts().put(productID, productStock);
+                    basket.getProductPrices().put(productID, productPrice * productStock);
+                }
+            } else {
+                if (quantity <= productStock) {
+                    basket.getProductAmounts().put(productID, quantity);
+                    basket.getProductPrices().put(productID, productPrice * quantity);
+                } else {
+                    basket.getProductAmounts().put(productID, productStock);
+                    basket.getProductPrices().put(productID, productPrice * productStock);
+                }
+            }
+            double totalPrice = calculateBasketTotalPrice(basket);
+            basket.setTotalPrice(totalPrice);
+            return totalPrice;
+        }
         return null;
     }
 
     @Override
     public Double removeProductFromBasket(String basketID, String watchID) {
+        Optional<Basket> optionalBasket = basketRepository.findById(UUID.fromString(basketID));
+        if (optionalBasket.isPresent()) {
+            Basket basket = optionalBasket.get();
+            basket.getProductAmounts().remove(watchID);
+            basket.getProductPrices().remove(watchID);
+            double totalPrice = calculateBasketTotalPrice(basket);
+            basket.setTotalPrice(totalPrice);
+            return totalPrice;
+        }
         return null;
     }
 
     @Override
-    public Double updateProductQuantityInBasket(String basketID, String watchID, int quantity) {
+    public Double updateProductQuantity(String basketID, Watch watch, int quantity) {
+        Optional<Basket> optionalBasket = basketRepository.findById(UUID.fromString(basketID));
+        if (optionalBasket.isPresent()) {
+            Basket basket = optionalBasket.get();
+            double productPrice = watch.getPrice();
+            int productStock = watch.getStock();
+            String productID = watch.getId().toString();
+            boolean productInBasket = basket.getProductAmounts().containsKey(productID);
+
+            if (!productInBasket) {
+                return -1.0;
+            }
+            if (quantity <= productStock) {
+                basket.getProductAmounts().put(productID, quantity);
+                basket.getProductPrices().put(productID, productPrice * quantity);
+            } else {
+                basket.getProductAmounts().put(productID, productStock);
+                basket.getProductPrices().put(productID, productPrice * productStock);
+            }
+            double totalPrice = calculateBasketTotalPrice(basket);
+            basket.setTotalPrice(totalPrice);
+            return totalPrice;
+        }
         return null;
     }
 
@@ -42,7 +104,8 @@ public class BasketService implements IBasketService {
     public void clearBasket(String basketID) {
         Basket retrievedBasket = basketRepository.findById(UUID.fromString(basketID)).orElse(null);
         if (retrievedBasket != null) {
-            retrievedBasket.getProducts().clear();
+            retrievedBasket.getProductAmounts().clear();
+            retrievedBasket.getProductPrices().clear();
             retrievedBasket.setTotalPrice(0.0);
         }
     }
@@ -73,7 +136,11 @@ public class BasketService implements IBasketService {
 
     @Override
     public Double getProductTotalPrice(String basketID, String watchID) {
-        return null;
+        Basket retrievedBasket = basketRepository.findById(UUID.fromString(basketID)).orElse(null);
+        if (retrievedBasket == null) {
+            return null;
+        }
+        return retrievedBasket.getProductPrices().getOrDefault(watchID, -1.0);
     }
 
     @Override
@@ -82,6 +149,6 @@ public class BasketService implements IBasketService {
     }
 
     private Double calculateBasketTotalPrice(Basket basket) {
-        return null;
+        return basket.getProductPrices().values().stream().mapToDouble(Double::doubleValue).sum();
     }
 }

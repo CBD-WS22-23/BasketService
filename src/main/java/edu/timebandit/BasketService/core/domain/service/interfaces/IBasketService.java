@@ -11,7 +11,7 @@ public interface IBasketService {
 
     Double removeProductFromBasket(String basketID, String watchID);
 
-    Double updateProductQuantityInBasket(String basketID, String watchID, int quantity);
+    Double updateProductQuantity(String basketID, Watch watch, int quantity);
 
     void clearBasket(String basketID);
 
