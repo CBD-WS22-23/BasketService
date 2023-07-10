@@ -1,13 +1,10 @@
 package edu.timebandit.BasketService.port.user.controller;
 
 import edu.timebandit.BasketService.core.domain.model.Basket;
-import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketProductService;
 import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketService;
 import edu.timebandit.BasketService.port.user.exception.BasketNotFoundException;
-import edu.timebandit.BasketService.port.user.exception.BasketProductNotFoundException;
 import edu.timebandit.BasketService.port.user.exception.InvalidQuantityException;
-import edu.timebandit.BasketService.port.user.exception.ProductNotInBasketException;
-import edu.timebandit.BasketService.port.user.producer.BasketProducer;
+import edu.timebandit.BasketService.port.user.producer.UserBasketProducer;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,16 +12,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
-public class BasketController {
+public class UserBasketController {
 
     @Autowired
     private IBasketService basketService;
 
     @Autowired
-    private IBasketProductService basketProductService;
-
-    @Autowired
-    private BasketProducer basketProducer;
+    private UserBasketProducer userBasketProducer;
 
 
     @Operation(summary = "Create a new basket")
@@ -73,6 +67,7 @@ public class BasketController {
     @ResponseStatus(HttpStatus.OK)
     public String clearBasket(@PathVariable String basketID) {
         if (basketService.checkBasketExists(basketID)) {
+            basketService.getBasketByID(basketID).getProducts().forEach((product, amount) -> userBasketProducer.sendProductRemovedFromBasketMessage(product.getId().toString()));
             basketService.clearBasket(basketID);
             return "Basket with id: " + basketID + " was cleared";
         } else {
@@ -80,34 +75,15 @@ public class BasketController {
         }
     }
 
-    @Operation(summary = "Add a product to a basket")
-    @PostMapping(path = "/basket/{basketID}/product/{productID}")
-    @ResponseStatus(HttpStatus.OK)
-    public Double addProductToBasket(@PathVariable String basketID, @PathVariable String productID,
-                                     @RequestParam int q) {
-        if (q <= 0) {
-            throw new InvalidQuantityException();
-        }
-        if (!basketProductService.checkIfBasketProductExists(productID)){
-            throw new BasketProductNotFoundException(productID);
-        }
-        Double totalPrice = basketService.addProductToBasket(basketID, basketProductService.getBasketProductByID(productID), q);
-        if (totalPrice == null) {
-            throw new BasketNotFoundException(basketID);
-        }
-        basketProducer.sendProductAddedToBasketMessage(productID);
-        return totalPrice;
-    }
-
     @Operation(summary = "Remove a product from a basket")
-    @DeleteMapping(path = "/basket/{basketID}/product/{productID}")
+    @DeleteMapping(path = "/basket/{basketID}/products/")
     @ResponseStatus(HttpStatus.OK)
-    public Double removeProductFromBasket(@PathVariable String basketID, @PathVariable String productID) {
+    public Double removeProductFromBasket(@PathVariable String basketID, @RequestParam String productID) {
         Double totalPrice = basketService.removeProductFromBasket(basketID, productID);
         if (totalPrice == null) {
             throw new BasketNotFoundException(basketID);
         }
-        basketProducer.sendProductRemovedFromBasketMessage(productID);
+        userBasketProducer.sendProductRemovedFromBasketMessage(productID);
         return totalPrice;
     }
 
@@ -119,15 +95,9 @@ public class BasketController {
         if (q <= 0) {
             throw new InvalidQuantityException();
         }
-        if (!basketProductService.checkIfBasketProductExists(productID)){
-            throw new BasketProductNotFoundException(productID);
-        }
-        Double totalPrice = basketService.updateProductQuantity(basketID, basketProductService.getBasketProductByID(productID), q);
+        Double totalPrice = basketService.updateProductQuantity(basketID, productID, q);
         if (totalPrice == null) {
             throw new BasketNotFoundException(basketID);
-        }
-        if (totalPrice == -1.0) {
-            throw new ProductNotInBasketException(basketID, productID);
         }
         return totalPrice;
     }
@@ -139,9 +109,6 @@ public class BasketController {
         Double totalPrice = basketService.getProductTotalPrice(basketID, productID);
         if (totalPrice == null) {
             throw new BasketNotFoundException(basketID);
-        }
-        if (totalPrice == -1.0) {
-            throw new ProductNotInBasketException(basketID, productID);
         }
         return totalPrice;
     }

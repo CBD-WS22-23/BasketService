@@ -5,6 +5,7 @@ import edu.timebandit.BasketService.core.domain.model.Watch;
 import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketRepository;
 import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -21,37 +22,25 @@ public class BasketService implements IBasketService {
 
     @Override
     public String createBasket() {
-        return basketRepository.save(new Basket(UUID.randomUUID(), new HashMap<>(), new HashMap<>(), 0.0)).getId().toString();
+        return basketRepository.save(new Basket(UUID.randomUUID(), new HashMap<>(), 0.0)).getId().toString();
     }
 
     @Override
+    @Transactional
     public Double addProductToBasket(String basketID, Watch watch, int quantity) {
         Optional<Basket> optionalBasket = basketRepository.findById(UUID.fromString(basketID));
         if (optionalBasket.isPresent()) {
             Basket basket = optionalBasket.get();
-            double productPrice = watch.getPrice();
             int productStock = watch.getStock();
-            String productID = watch.getId().toString();
-            boolean productInBasket = basket.getProductAmounts().containsKey(productID);
+            boolean productInBasket = basket.getProducts().containsKey(watch);
 
             if (productInBasket) {
-                int currentProductAmount = basket.getProductAmounts().get(productID);
-                if (currentProductAmount + quantity <= productStock) {
-                    basket.getProductAmounts().put(productID, currentProductAmount + quantity);
-                    basket.getProductPrices().put(productID, productPrice * (currentProductAmount + quantity));
-                } else {
-                    basket.getProductAmounts().put(productID, productStock);
-                    basket.getProductPrices().put(productID, productPrice * productStock);
-                }
+                int currentProductAmount = basket.getProducts().get(watch);
+                basket.getProducts().put(watch, Math.min(currentProductAmount + quantity, productStock));
             } else {
-                if (quantity <= productStock) {
-                    basket.getProductAmounts().put(productID, quantity);
-                    basket.getProductPrices().put(productID, productPrice * quantity);
-                } else {
-                    basket.getProductAmounts().put(productID, productStock);
-                    basket.getProductPrices().put(productID, productPrice * productStock);
-                }
+                basket.getProducts().put(watch, Math.min(quantity, productStock));
             }
+
             double totalPrice = calculateBasketTotalPrice(basket);
             basket.setTotalPrice(totalPrice);
             basketRepository.save(basket);
@@ -61,12 +50,17 @@ public class BasketService implements IBasketService {
     }
 
     @Override
+    @Transactional
     public Double removeProductFromBasket(String basketID, String watchID) {
         Optional<Basket> optionalBasket = basketRepository.findById(UUID.fromString(basketID));
         if (optionalBasket.isPresent()) {
             Basket basket = optionalBasket.get();
-            basket.getProductAmounts().remove(watchID);
-            basket.getProductPrices().remove(watchID);
+            for (Watch watch : basket.getProducts().keySet()) {
+                if (watch.getId().toString().equals(watchID)) {
+                    basket.getProducts().remove(watch);
+                    break;
+                }
+            }
             double totalPrice = calculateBasketTotalPrice(basket);
             basket.setTotalPrice(totalPrice);
             basketRepository.save(basket);
@@ -76,24 +70,17 @@ public class BasketService implements IBasketService {
     }
 
     @Override
-    public Double updateProductQuantity(String basketID, Watch watch, int quantity) {
+    @Transactional
+    public Double updateProductQuantity(String basketID, String watchID, int quantity) {
         Optional<Basket> optionalBasket = basketRepository.findById(UUID.fromString(basketID));
         if (optionalBasket.isPresent()) {
             Basket basket = optionalBasket.get();
-            double productPrice = watch.getPrice();
-            int productStock = watch.getStock();
-            String productID = watch.getId().toString();
-            boolean productInBasket = basket.getProductAmounts().containsKey(productID);
-
-            if (!productInBasket) {
-                return -1.0;
-            }
-            if (quantity <= productStock) {
-                basket.getProductAmounts().put(productID, quantity);
-                basket.getProductPrices().put(productID, productPrice * quantity);
-            } else {
-                basket.getProductAmounts().put(productID, productStock);
-                basket.getProductPrices().put(productID, productPrice * productStock);
+            for (Watch watch : basket.getProducts().keySet()) {
+                if (watch.getId().toString().equals(watchID)) {
+                    int productStock = watch.getStock();
+                    basket.getProducts().put(watch, Math.min(quantity, productStock));
+                    break;
+                }
             }
             double totalPrice = calculateBasketTotalPrice(basket);
             basket.setTotalPrice(totalPrice);
@@ -104,11 +91,11 @@ public class BasketService implements IBasketService {
     }
 
     @Override
+    @Transactional
     public void clearBasket(String basketID) {
         Basket retrievedBasket = basketRepository.findById(UUID.fromString(basketID)).orElse(null);
         if (retrievedBasket != null) {
-            retrievedBasket.getProductAmounts().clear();
-            retrievedBasket.getProductPrices().clear();
+            retrievedBasket.getProducts().clear();
             retrievedBasket.setTotalPrice(0.0);
             basketRepository.save(retrievedBasket);
         }
@@ -144,7 +131,7 @@ public class BasketService implements IBasketService {
         if (retrievedBasket == null) {
             return null;
         }
-        return retrievedBasket.getProductPrices().getOrDefault(watchID, -1.0);
+        return calculateProductTotalPrice(retrievedBasket, watchID);
     }
 
     @Override
@@ -153,6 +140,21 @@ public class BasketService implements IBasketService {
     }
 
     private Double calculateBasketTotalPrice(Basket basket) {
-        return basket.getProductPrices().values().stream().mapToDouble(Double::doubleValue).sum();
+        double totalPrice = 0.0;
+        for (Watch watch : basket.getProducts().keySet()) {
+            totalPrice += watch.getPrice() * basket.getProducts().get(watch);
+        }
+        return totalPrice;
+    }
+
+    private Double calculateProductTotalPrice(Basket basket, String watchID) {
+        double totalPrice = -1.0;
+        for (Watch watch : basket.getProducts().keySet()) {
+            if (watch.getId().toString().equals(watchID)) {
+                totalPrice = watch.getPrice() * basket.getProducts().get(watch);
+                break;
+            }
+        }
+        return totalPrice;
     }
 }

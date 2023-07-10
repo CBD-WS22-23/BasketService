@@ -1,7 +1,7 @@
 package edu.timebandit.BasketService.port.config;
 
 import edu.timebandit.BasketService.core.domain.model.Watch;
-import edu.timebandit.BasketService.core.domain.model.WatchDTO;
+import edu.timebandit.BasketService.port.product.dtos.WatchDTO;
 import org.modelmapper.Converter;
 import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Qualifier;
