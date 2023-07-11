@@ -27,6 +27,15 @@ public class RabbitMQConfig {
     @Value("basket_exchange")
     private String basketExchange;
 
+    @Value("checkout_queue")
+    private String checkoutName;
+
+    @Value("checkout_routing_key")
+    private String checkoutRoutingKey;
+
+    @ Value("checkout_exchange")
+    private String checkoutExchange;
+
     @Bean
     public Queue productAddedToBasketQueue() {
         return new Queue(productAddedName);
@@ -38,6 +47,16 @@ public class RabbitMQConfig {
     @Bean
     public DirectExchange basketExchange() {
         return new DirectExchange(basketExchange);
+    }
+
+    @Bean
+    public Queue checkoutQueue() {
+        return new Queue(checkoutName);
+    }
+
+    @Bean
+    public DirectExchange checkoutExchange() {
+        return new DirectExchange(checkoutExchange);
     }
 
     @Bean
@@ -54,6 +73,14 @@ public class RabbitMQConfig {
                 .bind(productRemovedFromBasketQueue())
                 .to(basketExchange())
                 .with(productRemovedRoutingKey);
+    }
+
+    @Bean
+    public Binding checkoutBinding() {
+        return BindingBuilder
+                .bind(checkoutQueue())
+                .to(checkoutExchange())
+                .with(checkoutRoutingKey);
     }
 
     @Bean
