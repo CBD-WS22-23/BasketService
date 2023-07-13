@@ -1,6 +1,6 @@
 package edu.timebandit.BasketService.port.checkout.producer;
 
-import edu.timebandit.BasketService.port.checkout.dtos.CheckoutDTO;
+import edu.timebandit.BasketService.port.checkout.dtos.OrderDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -25,9 +25,9 @@ public class CheckoutOrderProducer {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public void sendCheckoutOrderMessage(CheckoutDTO checkoutDTO) {
-        logger.info("Sending message to checkout basket: {}", checkoutDTO);
-        rabbitTemplate.convertAndSend(exchange, checkoutRoutingKey, checkoutDTO);
+    public void sendCheckoutOrderMessage(OrderDTO orderDTO) {
+        logger.info("Sending message to checkout basket: {}", orderDTO);
+        rabbitTemplate.convertAndSend(exchange, checkoutRoutingKey, orderDTO);
     }
 
 

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CheckoutDTO {
+public class OrderDTO {
 
     private BasketDTO basket;
     private AddressDTO shippingAddress;

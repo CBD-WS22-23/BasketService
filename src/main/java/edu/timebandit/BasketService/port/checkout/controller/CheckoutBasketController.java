@@ -43,7 +43,7 @@ public class CheckoutBasketController {
             }
             BasketDTO basketDTO = new BasketDTO(basket.getId().toString(), checkoutProducts, basket.getTotalPrice());
 
-            checkoutOrderProducer.sendCheckoutOrderMessage(new CheckoutDTO( basketDTO,
+            checkoutOrderProducer.sendCheckoutOrderMessage(new OrderDTO( basketDTO,
                     userAddresses.getShippingAddress(), userAddresses.getBillingAddress(), paymentMethod.toString()));
         } else {
             throw new BasketNotFoundException(basketID);
