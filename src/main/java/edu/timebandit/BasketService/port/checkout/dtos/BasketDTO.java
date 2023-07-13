@@ -1,18 +1,19 @@
 package edu.timebandit.BasketService.port.checkout.dtos;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CheckoutDTO {
+public class BasketDTO {
 
-    private BasketDTO basket;
-    private AddressDTO shippingAddress;
-    private AddressDTO billingAddress;
-    private String paymentMethod;
+    private String id;
 
+    private List<WatchDTO> watches;
+
+    private double totalPrice;
 }
