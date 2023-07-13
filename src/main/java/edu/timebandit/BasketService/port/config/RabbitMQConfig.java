@@ -39,7 +39,7 @@ public class RabbitMQConfig {
     @Value("checkout_success_routing_key")
     private String checkoutSuccessRoutingKey;
 
-    @ Value("checkout_exchange")
+    @Value("checkout_exchange")
     private String checkoutExchange;
 
     @Bean

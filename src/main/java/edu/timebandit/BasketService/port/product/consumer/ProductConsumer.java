@@ -1,8 +1,11 @@
 package edu.timebandit.BasketService.port.product.consumer;
 
 import edu.timebandit.BasketService.core.domain.model.Watch;
-import edu.timebandit.BasketService.port.product.controller.ProductBasketController;
+import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketService;
 import edu.timebandit.BasketService.port.product.dtos.AddProductToBasketDTO;
+import edu.timebandit.BasketService.port.product.producer.ProductBasketProducer;
+import edu.timebandit.BasketService.port.user.exception.BasketNotFoundException;
+import edu.timebandit.BasketService.port.user.exception.InvalidQuantityException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,14 +24,26 @@ public class ProductConsumer {
     private ModelMapper basketModelMapper;
 
     @Autowired
-    private ProductBasketController productBasketController;
+    private IBasketService basketService;
+
+    @Autowired
+    private ProductBasketProducer productBasketProducer;
 
     @RabbitListener(queues = "add_product_to_basket_queue")
     public void receiveProductAddedToBasketMessage(AddProductToBasketDTO addProductToBasketDTO) {
         LOGGER.info("Received message to add product to basket: {}", addProductToBasketDTO);
 
-        productBasketController.addProductToBasket(addProductToBasketDTO.getBasketId(),
-                basketModelMapper.map(addProductToBasketDTO.getWatch(), Watch.class), addProductToBasketDTO.getQuantity());
+        if (addProductToBasketDTO.getQuantity() <= 0) {
+            throw new InvalidQuantityException();
+        }
+
+        Watch product = basketModelMapper.map(addProductToBasketDTO.getWatch(), Watch.class);
+
+        Double totalPrice = basketService.addProductToBasket(addProductToBasketDTO.getBasketId(), product, addProductToBasketDTO.getQuantity());
+        if (totalPrice == null) {
+            throw new BasketNotFoundException(addProductToBasketDTO.getBasketId());
+        }
+        productBasketProducer.sendProductAddedToBasketMessage(product.getId().toString());
     }
 
 }
