@@ -33,6 +33,12 @@ public class RabbitMQConfig {
     @Value("checkout_routing_key")
     private String checkoutRoutingKey;
 
+    @Value("checkout_success_queue")
+    private String checkoutSuccessName;
+
+    @Value("checkout_success_routing_key")
+    private String checkoutSuccessRoutingKey;
+
     @ Value("checkout_exchange")
     private String checkoutExchange;
 
@@ -52,6 +58,11 @@ public class RabbitMQConfig {
     @Bean
     public Queue checkoutQueue() {
         return new Queue(checkoutName);
+    }
+
+    @Bean
+    public Queue checkoutSuccessQueue() {
+        return new Queue(checkoutSuccessName);
     }
 
     @Bean
@@ -81,6 +92,14 @@ public class RabbitMQConfig {
                 .bind(checkoutQueue())
                 .to(checkoutExchange())
                 .with(checkoutRoutingKey);
+    }
+
+    @Bean
+    public Binding checkoutSuccessBinding() {
+        return BindingBuilder
+                .bind(checkoutSuccessQueue())
+                .to(checkoutExchange())
+                .with(checkoutSuccessRoutingKey);
     }
 
     @Bean
