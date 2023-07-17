@@ -3,7 +3,7 @@ package edu.timebandit.BasketService.port.product.consumer;
 import edu.timebandit.BasketService.core.domain.model.Watch;
 import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketService;
 import edu.timebandit.BasketService.port.product.dtos.AddProductToBasketDTO;
-import edu.timebandit.BasketService.port.product.producer.ProductBasketProducer;
+import edu.timebandit.BasketService.port.product.producer.ProductAddedToBasketProducer;
 import edu.timebandit.BasketService.port.user.exception.BasketNotFoundException;
 import edu.timebandit.BasketService.port.user.exception.InvalidQuantityException;
 import org.modelmapper.ModelMapper;
@@ -27,7 +27,7 @@ public class ProductConsumer {
     private IBasketService basketService;
 
     @Autowired
-    private ProductBasketProducer productBasketProducer;
+    private ProductAddedToBasketProducer productAddedToBasketProducer;
 
     @RabbitListener(queues = "add_product_to_basket_queue")
     public void receiveProductAddedToBasketMessage(AddProductToBasketDTO addProductToBasketDTO) {
@@ -43,7 +43,7 @@ public class ProductConsumer {
         if (totalPrice == null) {
             throw new BasketNotFoundException(addProductToBasketDTO.getBasketId());
         }
-        productBasketProducer.sendProductAddedToBasketMessage(product.getId().toString());
+        productAddedToBasketProducer.sendProductAddedToBasketMessage(product.getId().toString());
     }
 
 }

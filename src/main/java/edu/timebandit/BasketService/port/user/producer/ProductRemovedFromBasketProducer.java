@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserBasketProducer {
+public class ProductRemovedFromBasketProducer {
 
     @Value("basket_exchange")
     private String exchange;
@@ -16,11 +16,11 @@ public class UserBasketProducer {
     @Value("product_removed_from_basket_routing_key")
     private String productRemovedFromBasketRoutingKey;
 
-    private static final Logger logger = LoggerFactory.getLogger(UserBasketProducer.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProductRemovedFromBasketProducer.class);
 
     private final RabbitTemplate rabbitTemplate;
 
-    public UserBasketProducer(RabbitTemplate rabbitTemplate) {
+    public ProductRemovedFromBasketProducer(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
 

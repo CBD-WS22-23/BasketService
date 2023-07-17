@@ -4,7 +4,7 @@ import edu.timebandit.BasketService.core.domain.model.Basket;
 import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketService;
 import edu.timebandit.BasketService.port.user.exception.BasketNotFoundException;
 import edu.timebandit.BasketService.port.user.exception.InvalidQuantityException;
-import edu.timebandit.BasketService.port.user.producer.UserBasketProducer;
+import edu.timebandit.BasketService.port.user.producer.ProductRemovedFromBasketProducer;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ public class UserBasketController {
     private IBasketService basketService;
 
     @Autowired
-    private UserBasketProducer userBasketProducer;
+    private ProductRemovedFromBasketProducer productRemovedFromBasketProducer;
 
 
     @Operation(summary = "Create a new basket")
@@ -67,7 +67,7 @@ public class UserBasketController {
     @ResponseStatus(HttpStatus.OK)
     public String clearBasket(@PathVariable String basketID) {
         if (basketService.checkBasketExists(basketID)) {
-            basketService.getBasketByID(basketID).getProducts().forEach((product, amount) -> userBasketProducer.sendProductRemovedFromBasketMessage(product.getId().toString()));
+            basketService.getBasketByID(basketID).getProducts().forEach((product, amount) -> productRemovedFromBasketProducer.sendProductRemovedFromBasketMessage(product.getId().toString()));
             basketService.clearBasket(basketID);
             return "Basket with id: " + basketID + " was cleared";
         } else {
@@ -83,7 +83,7 @@ public class UserBasketController {
         if (totalPrice == null) {
             throw new BasketNotFoundException(basketID);
         }
-        userBasketProducer.sendProductRemovedFromBasketMessage(productID);
+        productRemovedFromBasketProducer.sendProductRemovedFromBasketMessage(productID);
         return totalPrice;
     }
 
