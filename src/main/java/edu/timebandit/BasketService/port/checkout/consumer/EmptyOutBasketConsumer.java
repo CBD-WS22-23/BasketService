@@ -14,7 +14,7 @@ public class EmptyOutBasketConsumer {
     @Autowired
     private IBasketService basketService;
 
-    @RabbitListener(queues = "empty_out_basket_queue")
+    @RabbitListener(queues = "empty_basket_queue")
     public void receiveEmptyOutBasketMessage(String basketID) {
         LOGGER.info("Received message to empty out basket: {}", basketID);
 
