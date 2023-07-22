@@ -4,7 +4,7 @@ import edu.timebandit.BasketService.core.domain.model.Basket;
 import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketService;
 import edu.timebandit.BasketService.port.user.exception.BasketNotFoundException;
 import edu.timebandit.BasketService.port.user.exception.InvalidQuantityException;
-import edu.timebandit.BasketService.port.user.producer.ProductRemovedFromBasketProducer;
+import edu.timebandit.BasketService.port.user.producer.interfaces.IProductRemovedFromBasketProducer;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ public class UserBasketController {
     private IBasketService basketService;
 
     @Autowired
-    private ProductRemovedFromBasketProducer productRemovedFromBasketProducer;
+    private IProductRemovedFromBasketProducer productRemovedFromBasketProducer;
 
 
     @Operation(summary = "Create a new basket")

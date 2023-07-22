@@ -1,6 +1,7 @@
-package edu.timebandit.BasketService.port.product.producer;
+package edu.timebandit.BasketService.port.product.producer.impl;
 
-import edu.timebandit.BasketService.port.user.producer.ProductRemovedFromBasketProducer;
+import edu.timebandit.BasketService.port.product.producer.interfaces.IProductAddedToBasketProducer;
+import edu.timebandit.BasketService.port.user.producer.impl.ProductRemovedFromBasketProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -8,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ProductAddedToBasketProducer {
+public class ProductAddedToBasketProducer implements IProductAddedToBasketProducer {
 
     @Value("basket_exchange")
     private String exchange;

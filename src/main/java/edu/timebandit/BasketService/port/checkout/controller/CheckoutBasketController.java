@@ -5,7 +5,7 @@ import edu.timebandit.BasketService.core.domain.model.Watch;
 import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketService;
 import edu.timebandit.BasketService.port.checkout.dtos.*;
 import edu.timebandit.BasketService.port.checkout.enums.PaymentMethod;
-import edu.timebandit.BasketService.port.checkout.producer.CheckoutOrderProducer;
+import edu.timebandit.BasketService.port.checkout.producer.interfaces.ICheckoutOrderProducer;
 import edu.timebandit.BasketService.port.user.exception.BasketNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -25,7 +25,7 @@ public class CheckoutBasketController {
     private IBasketService basketService;
 
     @Autowired
-    private CheckoutOrderProducer checkoutOrderProducer;
+    private ICheckoutOrderProducer checkoutOrderProducer;
 
 
     @Operation(summary = "Checkout a basket")

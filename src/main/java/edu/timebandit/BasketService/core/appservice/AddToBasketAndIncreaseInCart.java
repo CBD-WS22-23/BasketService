@@ -1,41 +1,29 @@
-package edu.timebandit.BasketService.port.product.consumer;
+package edu.timebandit.BasketService.core.appservice;
 
 import edu.timebandit.BasketService.core.domain.model.Watch;
 import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketService;
 import edu.timebandit.BasketService.port.product.dtos.AddProductToBasketDTO;
-import edu.timebandit.BasketService.port.product.producer.ProductAddedToBasketProducer;
+import edu.timebandit.BasketService.port.product.producer.interfaces.IProductAddedToBasketProducer;
 import edu.timebandit.BasketService.port.user.exception.BasketNotFoundException;
-import edu.timebandit.BasketService.port.user.exception.InvalidQuantityException;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ProductConsumer {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProductConsumer.class);
-
-    @Qualifier("BasketModelMapper")
-    @Autowired
-    private ModelMapper basketModelMapper;
+public class AddToBasketAndIncreaseInCart {
 
     @Autowired
     private IBasketService basketService;
 
     @Autowired
-    private ProductAddedToBasketProducer productAddedToBasketProducer;
+    IProductAddedToBasketProducer productAddedToBasketProducer;
 
-    @RabbitListener(queues = "add_product_to_basket_queue")
-    public void receiveProductAddedToBasketMessage(AddProductToBasketDTO addProductToBasketDTO) {
-        LOGGER.info("Received message to add product to basket: {}", addProductToBasketDTO);
+    @Qualifier("BasketModelMapper")
+    @Autowired
+    private ModelMapper basketModelMapper;
 
-        if (addProductToBasketDTO.getQuantity() <= 0) {
-            throw new InvalidQuantityException();
-        }
+    public void addAndIncrease(AddProductToBasketDTO addProductToBasketDTO) {
 
         Watch product = basketModelMapper.map(addProductToBasketDTO.getWatch(), Watch.class);
 
@@ -45,5 +33,4 @@ public class ProductConsumer {
         }
         productAddedToBasketProducer.sendProductAddedToBasketMessage(product.getId().toString());
     }
-
 }
