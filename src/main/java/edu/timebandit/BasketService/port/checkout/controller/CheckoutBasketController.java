@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/bs/api/v1")
 public class CheckoutBasketController {
 
     @Autowired
