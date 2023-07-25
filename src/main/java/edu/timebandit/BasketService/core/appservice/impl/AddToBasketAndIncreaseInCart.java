@@ -1,5 +1,6 @@
-package edu.timebandit.BasketService.core.appservice;
+package edu.timebandit.BasketService.core.appservice.impl;
 
+import edu.timebandit.BasketService.core.appservice.interfaces.IAddToBasketAndIncreaseInCart;
 import edu.timebandit.BasketService.core.domain.model.Watch;
 import edu.timebandit.BasketService.core.domain.service.interfaces.IBasketService;
 import edu.timebandit.BasketService.port.product.dtos.AddProductToBasketDTO;
@@ -11,7 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AddToBasketAndIncreaseInCart {
+public class AddToBasketAndIncreaseInCart implements IAddToBasketAndIncreaseInCart {
 
     @Autowired
     private IBasketService basketService;
