@@ -91,6 +91,7 @@ public class BasketService implements IBasketService {
     }
 
     @Override
+    @Transactional
     public int getProductQuantity(String basketID, String watchID) {
         Basket retrievedBasket = basketRepository.findById(UUID.fromString(basketID)).orElse(null);
         if (retrievedBasket == null) {
@@ -152,6 +153,7 @@ public class BasketService implements IBasketService {
     public boolean checkBasketExists(String basketID) {
         return basketRepository.existsById(UUID.fromString(basketID));
     }
+
 
     private Double calculateBasketTotalPrice(Basket basket) {
         double totalPrice = 0.0;

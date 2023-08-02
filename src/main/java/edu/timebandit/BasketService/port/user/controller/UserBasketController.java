@@ -76,9 +76,9 @@ public class UserBasketController {
     }
 
     @Operation(summary = "Remove a product from a basket")
-    @DeleteMapping(path = "/basket/{basketID}/products/")
+    @DeleteMapping(path = "/basket/{basketID}/products/{productID}")
     @ResponseStatus(HttpStatus.OK)
-    public Double removeProductFromBasket(@PathVariable String basketID, @RequestParam String productID) {
+    public Double removeProductFromBasket(@PathVariable String basketID, @PathVariable String productID) {
         Double totalPrice = basketService.removeProductFromBasket(basketID, productID);
         if (totalPrice == null) {
             throw new BasketNotFoundException(basketID);
