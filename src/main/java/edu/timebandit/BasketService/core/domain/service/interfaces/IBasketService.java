@@ -13,6 +13,8 @@ public interface IBasketService {
 
     Double updateProductQuantity(String basketID, String watchID, int quantity);
 
+    int getProductQuantity(String basketID, String watchID);
+
     void clearBasket(String basketID);
 
     void deleteBasket(String basketID);

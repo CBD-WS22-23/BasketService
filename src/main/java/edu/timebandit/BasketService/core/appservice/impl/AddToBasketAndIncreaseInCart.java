@@ -25,13 +25,20 @@ public class AddToBasketAndIncreaseInCart implements IAddToBasketAndIncreaseInCa
     private ModelMapper basketModelMapper;
 
     public void addAndIncrease(AddProductToBasketDTO addProductToBasketDTO) {
-
-        Watch product = basketModelMapper.map(addProductToBasketDTO.getWatch(), Watch.class);
-
-        Double totalPrice = basketService.addProductToBasket(addProductToBasketDTO.getBasketId(), product, addProductToBasketDTO.getQuantity());
-        if (totalPrice == null) {
+        if (!basketService.checkBasketExists(addProductToBasketDTO.getBasketId())) {
             throw new BasketNotFoundException(addProductToBasketDTO.getBasketId());
         }
-        productAddedToBasketProducer.sendProductAddedToBasketMessage(product.getId().toString());
+
+        int productQuantityInBasket = basketService.getProductQuantity(addProductToBasketDTO.getBasketId(),
+                addProductToBasketDTO.getWatch().getId());
+        if (productQuantityInBasket > 0) {
+            basketService.updateProductQuantity(addProductToBasketDTO.getBasketId(),
+                    addProductToBasketDTO.getWatch().getId(), addProductToBasketDTO.getQuantity()+productQuantityInBasket);
+        } else {
+            Watch product = basketModelMapper.map(addProductToBasketDTO.getWatch(), Watch.class);
+            basketService.addProductToBasket(addProductToBasketDTO.getBasketId(), product,
+                    addProductToBasketDTO.getQuantity());
+            productAddedToBasketProducer.sendProductAddedToBasketMessage(product.getId().toString());
+        }
     }
 }

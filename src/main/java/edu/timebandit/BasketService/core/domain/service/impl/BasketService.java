@@ -91,6 +91,20 @@ public class BasketService implements IBasketService {
     }
 
     @Override
+    public int getProductQuantity(String basketID, String watchID) {
+        Basket retrievedBasket = basketRepository.findById(UUID.fromString(basketID)).orElse(null);
+        if (retrievedBasket == null) {
+            return -1;
+        }
+        for (Watch watch : retrievedBasket.getProducts().keySet()) {
+            if (watch.getId().toString().equals(watchID)) {
+                return retrievedBasket.getProducts().get(watch);
+            }
+        }
+        return -1;
+    }
+
+    @Override
     @Transactional
     public void clearBasket(String basketID) {
         Basket retrievedBasket = basketRepository.findById(UUID.fromString(basketID)).orElse(null);

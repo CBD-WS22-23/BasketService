@@ -91,11 +91,11 @@ public class UserBasketController {
     @PutMapping(path = "/basket/{basketID}/product/{productID}")
     @ResponseStatus(HttpStatus.OK)
     public Double updateProductQuantity(@PathVariable String basketID, @PathVariable String productID,
-                                        @RequestParam int q) {
-        if (q <= 0) {
+                                        @RequestParam int quantity) {
+        if (quantity <= 0) {
             throw new InvalidQuantityException();
         }
-        Double totalPrice = basketService.updateProductQuantity(basketID, productID, q);
+        Double totalPrice = basketService.updateProductQuantity(basketID, productID, quantity);
         if (totalPrice == null) {
             throw new BasketNotFoundException(basketID);
         }
