@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class WatchDTO {
         @NotBlank(message = "ID cannot be blank")
         private String id;
-
+        @NotBlank(message = "Name cannot be blank")
         private String name;
         @PositiveOrZero(message = "Price must be greater than or equal to 0")
         private double price;
