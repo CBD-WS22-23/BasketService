@@ -2,13 +2,16 @@ package edu.timebandit.BasketService.port.checkout.producer.impl;
 
 import edu.timebandit.BasketService.port.checkout.dtos.OrderDTO;
 import edu.timebandit.BasketService.port.checkout.producer.interfaces.ICheckoutOrderProducer;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 @Service
+@Validated
 public class CheckoutOrderProducer implements ICheckoutOrderProducer {
 
     @Value("checkout_exchange")
@@ -26,7 +29,7 @@ public class CheckoutOrderProducer implements ICheckoutOrderProducer {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public void sendCheckoutOrderMessage(OrderDTO orderDTO) {
+    public void sendCheckoutOrderMessage(@Valid OrderDTO orderDTO) {
         logger.info("Sending message to checkout basket: {}", orderDTO);
         rabbitTemplate.convertAndSend(exchange, checkoutRoutingKey, orderDTO);
     }
