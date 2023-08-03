@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  database:
+    platform: linux/x86_64
+    image: 'postgres:latest'
+    container_name: basketDB
+    ports:
+      - '5433:5432'
+    volumes:
+      - ./:/app/
+    environment:
+      POSTGRES_DB: basketDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    networks:
+      - internal
+
+  app:
+    container_name: basketService
+    command: java -jar target/BasketService-0.0.1-SNAPSHOT.jar
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8081:8081'
+    depends_on:
+      - database
+    volumes:
+      - ./:/app/app
+    links:
+      - database
+    networks:
+      - internal
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/basketDB
+      - spring_rabbitmq_host=host.docker.internal
+      - spring_rabbitmq_port=5672
+
+networks:
+  internal:
+    name: internal
